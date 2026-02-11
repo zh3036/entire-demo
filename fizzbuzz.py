@@ -38,6 +38,29 @@ def parse_rule(s: str) -> tuple[int, str]:
     return (divisor, parts[1])
 
 
+def histogram(start: int, end: int, rules: list[tuple[int, str]] | None = None) -> dict[str, int]:
+    """Count frequency of each label in the FizzBuzz run."""
+    results = run(start, end, rules)
+    counts: dict[str, int] = {}
+    for r in results:
+        key = r if not r.isdigit() else "(number)"
+        counts[key] = counts.get(key, 0) + 1
+    return dict(sorted(counts.items(), key=lambda x: -x[1]))
+
+
+def format_chart(counts: dict[str, int], width: int = 40) -> str:
+    """Render a horizontal bar chart from label counts."""
+    if not counts:
+        return ""
+    max_val = max(counts.values())
+    max_label = max(len(k) for k in counts)
+    lines = []
+    for label, count in counts.items():
+        bar_len = int(count / max_val * width)
+        lines.append(f"{label:>{max_label}} | {'█' * bar_len} {count}")
+    return "\n".join(lines)
+
+
 def stats(start: int, end: int, rules: list[tuple[int, str]] | None = None) -> dict:
     """Return statistics about the FizzBuzz run."""
     results = run(start, end, rules)
@@ -60,8 +83,17 @@ def main(argv: list[str] | None = None) -> None:
         help="Custom rule as 'divisor:label' (e.g. 7:Woof). Can be repeated."
     )
     parser.add_argument("--stats", action="store_true", help="Show statistics instead of results")
+    parser.add_argument("--chart", action="store_true", help="Show frequency bar chart")
     parser.add_argument("--json", action="store_true", dest="as_json", help="Output as JSON")
     args = parser.parse_args(argv)
+
+    if args.chart:
+        counts = histogram(args.start, args.end, args.rules)
+        if args.as_json:
+            print(json.dumps(counts))
+        else:
+            print(format_chart(counts))
+        return
 
     if args.stats:
         s = stats(args.start, args.end, args.rules)

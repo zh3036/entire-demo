@@ -1,6 +1,6 @@
 """Tests for the configurable FizzBuzz module."""
 
-from fizzbuzz import fizzbuzz, run, parse_rule, stats, main
+from fizzbuzz import fizzbuzz, run, parse_rule, stats, histogram, format_chart, main
 import pytest
 
 
@@ -68,6 +68,30 @@ class TestStats:
         assert s["replacement_rate"] == pytest.approx(46.7, abs=0.1)
 
 
+class TestHistogram:
+    def test_classic_histogram(self):
+        h = histogram(1, 15)
+        assert h["(number)"] == 8
+        assert h["Fizz"] == 4
+        assert h["Buzz"] == 2
+        assert h["FizzBuzz"] == 1
+
+    def test_sorted_by_frequency(self):
+        h = histogram(1, 15)
+        values = list(h.values())
+        assert values == sorted(values, reverse=True)
+
+
+class TestFormatChart:
+    def test_chart_output(self):
+        counts = {"Fizz": 4, "Buzz": 2}
+        chart = format_chart(counts)
+        assert "Fizz" in chart
+        assert "Buzz" in chart
+        assert "█" in chart
+        assert "4" in chart
+
+
 class TestCLI:
     def test_json_output(self, capsys):
         main(["5", "--json"])
@@ -80,3 +104,16 @@ class TestCLI:
         main(["15", "--stats"])
         captured = capsys.readouterr()
         assert "46.7%" in captured.out
+
+    def test_chart_output(self, capsys):
+        main(["15", "--chart"])
+        captured = capsys.readouterr()
+        assert "█" in captured.out
+        assert "Fizz" in captured.out
+
+    def test_chart_json(self, capsys):
+        main(["15", "--chart", "--json"])
+        captured = capsys.readouterr()
+        import json
+        result = json.loads(captured.out)
+        assert result["Fizz"] == 4
