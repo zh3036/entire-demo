@@ -1,0 +1,30 @@
+{
+  "cli_version": "0.4.2",
+  "checkpoint_id": "60fea82e41f4",
+  "session_id": "17b79272-c09e-48ef-ab65-02dbf1d340c6",
+  "strategy": "manual-commit",
+  "created_at": "2026-02-11T06:23:44.278785Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "fizzbuzz.py"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "ff2adf1e-3ed3-44ba-a747-ccb07251cdf0",
+  "token_usage": {
+    "input_tokens": 399,
+    "cache_creation_tokens": 28779,
+    "cache_read_tokens": 1188808,
+    "output_tokens": 2160,
+    "api_call_count": 34
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-02-11T06:23:44.266635Z",
+    "agent_lines": 3,
+    "human_added": 929,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 932,
+    "agent_percentage": 0.3218884120171674
+  }
+}
