@@ -1,5 +1,7 @@
 """A configurable FizzBuzz CLI that supports custom divisor rules."""
 
+__version__ = "1.1.0"
+
 import argparse
 import json
 import sys
@@ -76,6 +78,7 @@ def stats(start: int, end: int, rules: list[tuple[int, str]] | None = None) -> d
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Configurable FizzBuzz")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument("end", type=int, help="Count up to this number")
     parser.add_argument("--start", type=int, default=1, help="Start from (default: 1)")
     parser.add_argument(
