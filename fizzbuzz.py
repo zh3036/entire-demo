@@ -85,6 +85,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--stats", action="store_true", help="Show statistics instead of results")
     parser.add_argument("--chart", action="store_true", help="Show frequency bar chart")
     parser.add_argument("--json", action="store_true", dest="as_json", help="Output as JSON")
+    parser.add_argument("--reverse", action="store_true", help="Print results in reverse order")
     args = parser.parse_args(argv)
 
     if args.chart:
@@ -104,6 +105,8 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     results = run(args.start, args.end, args.rules)
+    if args.reverse:
+        results = list(reversed(results))
     if args.as_json:
         print(json.dumps(results))
     else:
