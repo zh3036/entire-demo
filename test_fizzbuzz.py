@@ -1,6 +1,6 @@
 """Tests for the configurable FizzBuzz module."""
 
-from fizzbuzz import fizzbuzz, run, parse_rule
+from fizzbuzz import fizzbuzz, run, parse_rule, stats, main
 import pytest
 
 
@@ -54,3 +54,29 @@ class TestParseRule:
     def test_zero_divisor(self):
         with pytest.raises(Exception):
             parse_rule("0:Zero")
+
+
+class TestStats:
+    def test_classic_stats(self):
+        s = stats(1, 15)
+        assert s["total"] == 15
+        assert s["replaced"] == 7  # 3,5,6,9,10,12,15
+        assert s["numeric"] == 8
+
+    def test_replacement_rate(self):
+        s = stats(1, 15)
+        assert s["replacement_rate"] == pytest.approx(46.7, abs=0.1)
+
+
+class TestCLI:
+    def test_json_output(self, capsys):
+        main(["5", "--json"])
+        captured = capsys.readouterr()
+        import json
+        result = json.loads(captured.out)
+        assert result == ["1", "2", "Fizz", "4", "Buzz"]
+
+    def test_stats_output(self, capsys):
+        main(["15", "--stats"])
+        captured = capsys.readouterr()
+        assert "46.7%" in captured.out

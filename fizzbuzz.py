@@ -1,6 +1,7 @@
 """A configurable FizzBuzz CLI that supports custom divisor rules."""
 
 import argparse
+import json
 import sys
 
 
@@ -37,6 +38,19 @@ def parse_rule(s: str) -> tuple[int, str]:
     return (divisor, parts[1])
 
 
+def stats(start: int, end: int, rules: list[tuple[int, str]] | None = None) -> dict:
+    """Return statistics about the FizzBuzz run."""
+    results = run(start, end, rules)
+    total = len(results)
+    numeric = sum(1 for r in results if r.isdigit())
+    return {
+        "total": total,
+        "numeric": numeric,
+        "replaced": total - numeric,
+        "replacement_rate": round((total - numeric) / total * 100, 1),
+    }
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Configurable FizzBuzz")
     parser.add_argument("end", type=int, help="Count up to this number")
@@ -45,11 +59,24 @@ def main(argv: list[str] | None = None) -> None:
         "--rule", type=parse_rule, action="append", dest="rules",
         help="Custom rule as 'divisor:label' (e.g. 7:Woof). Can be repeated."
     )
+    parser.add_argument("--stats", action="store_true", help="Show statistics instead of results")
+    parser.add_argument("--json", action="store_true", dest="as_json", help="Output as JSON")
     args = parser.parse_args(argv)
 
+    if args.stats:
+        s = stats(args.start, args.end, args.rules)
+        if args.as_json:
+            print(json.dumps(s))
+        else:
+            print(f"Total: {s['total']}, Replaced: {s['replaced']} ({s['replacement_rate']}%)")
+        return
+
     results = run(args.start, args.end, args.rules)
-    for line in results:
-        print(line)
+    if args.as_json:
+        print(json.dumps(results))
+    else:
+        for line in results:
+            print(line)
 
 
 if __name__ == "__main__":
